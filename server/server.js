@@ -49,6 +49,9 @@ app.use(cors({origin: 'http://localhost:3000', credentials:true}));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
+app.get("/", (req, res) => {
+    res.send("Backend working fine")
+})
 
 // if(process.env.NODE_ENV === "production"){
 //     app.use(express.static(path.join(__dirname, "../client/dist")));
