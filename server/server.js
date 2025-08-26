@@ -50,17 +50,17 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
 
-if(process.env.NODE_ENV === "production"){
-    app.use(express.static(path.join(__dirname, "../client/dist")));
+// if(process.env.NODE_ENV === "production"){
+//     app.use(express.static(path.join(__dirname, "../client/dist")));
 
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
-    })
-}
+//     app.get("*", (req, res) => {
+//         res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+//     })
+// }
 
 connectDB()
 .then(() => {
     server.listen(port, () => {
-        console.log(`server is listening on port : ${port}`)
+        console.log(`server is listening on port : ${port}`);
     })
 }).catch((error) => console.log(error.message))
