@@ -2,8 +2,8 @@ import {userModel} from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {transporter} from "../config/nodemail.js"
-import cookieParser from "cookie-parser";
 import cloudinary from "../config/cloudinary.js";
+import {generateTokenAndCookies} from "../utils/generateTokenAndCookie.js"
 import corn from "node-cron";
 
 corn.schedule("*/30 * * * *", async () => {
@@ -36,7 +36,7 @@ export const registerUser = async (req, res) => {
     const verificationOTP = Math.floor(Math.random() * 900000 + 100000).toString();
     const verificationOtpExpiresAt = Date.now() + 10 * 60 * 1000   //OTP valid for 10 minutes
     const newUser = new userModel({userName, email, password:hasedPassword, verificationOTP,verificationOtpExpiresAt});
-    const token = jwt.sign({userId: newUser._id}, process.env.SECRET_KEY, {expiresIn: "1h"})
+    // const token = jwt.sign({userId: newUser._id}, process.env.SECRET_KEY, {expiresIn: "1h"})
     newUser.profilePic = `https://avatar.iran.liara.run/public/boy?username=${newUser.userName}`
     await newUser.save();
 
@@ -47,14 +47,8 @@ export const registerUser = async (req, res) => {
         text: `Welcome! your account has been created with email id: ${email}. Please verify your account with otp ${verificationOTP}. It is valid for 10 minutes. `
     }
     await transporter.sendMail(mailOptions);
-
-    res.cookie("token", token, {
-        httpOnly: true,
-        ecure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000,
-    });
-
+    generateTokenAndCookies(newUser, res)
+    
     res.status(201).json({success: true, message: "User register successfully, OTP sent to email"})
    } catch (error) {
     res.status(500).json({success: false, message: error.message})
@@ -103,13 +97,14 @@ export const loginUser = async (req, res) => {
             return res.status(500).json({success: false, message: "Wrong password"})
         }
 
-        const token = jwt.sign({userId:user._id}, process.env.SECRET_KEY, {expiresIn: "12h"});
-        res.cookie("token", token,{
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-            maxAge: 24 * 60 * 60 * 1000,
-        });
+        // const token = jwt.sign({userId:user._id}, process.env.SECRET_KEY, {expiresIn: "12h"});
+        // res.cookie("token", token,{
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production" ? true : false,
+        //     sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
+        //     maxAge: 12 * 60 * 60 * 1000,
+        // });
+        generateTokenAndCookies(user, res)
         user.lastLoggedIn = Date.now();
         await user.save();
        
@@ -134,7 +129,7 @@ export const logoutUser = async (req, res) => {
         res.clearCookie("token",{
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
         })
         return res.status(200).json({success: true, message: "user logged out successfully"});
     } catch (error) {
@@ -174,14 +169,15 @@ export const forgotPassword = async (req, res) => {
             subject: "Forgor-Password OTP",
             text: `Welcome! your forgot password otp or email id: ${email} is ${otp}. It is valid for 10 minutes. `
         }
+        generateTokenAndCookies(user, res)
         await transporter.sendMail(mailOptions);
     
-        res.cookie("token", token, {
-            httpOnly: true,
-            ecure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000,
-        });
+        // res.cookie("token", token, {
+        //     httpOnly: true,
+        //     ecure: process.env.NODE_ENV === "production",
+        //     sameSite: "strict",
+        //     maxAge: 24 * 60 * 60 * 1000,
+        // });
         res.status(200).json({success: true, message: "Forgot Password OTP Successfully send to email"})
 
     } catch (error) {
