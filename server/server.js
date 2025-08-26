@@ -7,12 +7,10 @@ import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
 import { router as authRouter } from "./routes/auth.route.js";
 import {router as messageRouter} from "./routes/message.route.js"
-import path from "path";
 
 dotenv.config();
 
 const port = process.env.PORT || 5000;
-const __dirname = path.resolve();
 
 const app = express();
 const server = http.createServer(app);
@@ -46,7 +44,7 @@ io.on("connection", (socket) => {
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 app.use(cors({origin: 'http://localhost:3000', credentials:true}));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
 app.get("/", (req, res) => {
