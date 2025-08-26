@@ -15,31 +15,31 @@ const allowedOrigins = ['https://mern-chat-app-orpin-psi.vercel.app', 'http://lo
 
 const app = express();
 const server = http.createServer(app);
-export const io = new Server(server, {
-    cors: {
-        origin: allowedOrigins,
-        methods: ["GET","POST"]
-    }
-});
+// export const io = new Server(server, {
+//     cors: {
+//         origin: allowedOrigins,
+//         methods: ["GET","POST"]
+//     }
+// });
 
-const onlineUsers = {};
-export function getReceiverSocketId(userId){
-    return onlineUsers[userId]
-};
-io.on("connection", (socket) => {
-    console.log("A User coneected", socket.id);
-   const userId = socket.handshake.query.userId;
-    if(userId){
-        onlineUsers[userId]= socket.id;
-    }
-    io.emit("getOnlineUsers", Object.keys(onlineUsers));
+// const onlineUsers = {};
+// export function getReceiverSocketId(userId){
+//     return onlineUsers[userId]
+// };
+// io.on("connection", (socket) => {
+//     console.log("A User coneected", socket.id);
+//    const userId = socket.handshake.query.userId;
+//     if(userId){
+//         onlineUsers[userId]= socket.id;
+//     }
+//     io.emit("getOnlineUsers", Object.keys(onlineUsers));
 
-    socket.on("disconnect", () => {
-        console.log("A User Disconnected", socket.id)
-        delete onlineUsers[userId];
-        io.emit("getOnlineUsers", Object.keys(onlineUsers));
-    })
-});
+//     socket.on("disconnect", () => {
+//         console.log("A User Disconnected", socket.id)
+//         delete onlineUsers[userId];
+//         io.emit("getOnlineUsers", Object.keys(onlineUsers));
+//     })
+// });
 
 app.use(express.json());
 app.use(cookieParser());
@@ -48,7 +48,7 @@ app.use(cors({
     credentials: true
 }));
 app.use("/api/auth", authRouter);
-app.use("/api/message", messageRouter);
+// app.use("/api/message", messageRouter);
 app.get("/", (req, res) => {
     res.send("Backend working fine..")
 });
