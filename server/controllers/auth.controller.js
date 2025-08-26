@@ -42,7 +42,7 @@ export const registerUser = async (req, res) => {
 
     const mailOptions = {
         from: process.env.SENDER_EMAIL,
-        to : "awaisjbr@gmail.com",
+        to : email,
         subject: "Account Activation",
         text: `Welcome! your account has been created with email id: ${email}. Please verify your account with otp ${verificationOTP}. It is valid for 10 minutes. `
     }
@@ -165,7 +165,7 @@ export const forgotPassword = async (req, res) => {
 
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
-            to : "awaisjbr@gmail.com",
+            to : email,
             subject: "Forgor-Password OTP",
             text: `Welcome! your forgot password otp or email id: ${email} is ${otp}. It is valid for 10 minutes. `
         }
