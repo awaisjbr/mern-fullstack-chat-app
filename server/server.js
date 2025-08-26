@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 export const io = new Server(server, {
     cors:{
-        origin: ['http://localhost:3000'],
+        origin: ['http://localhost:3000', 'https://mern-chat-app-orpin-psi.vercel.app'],
         methods: ["GET","POST"]
     },
 })
@@ -43,8 +43,8 @@ io.on("connection", (socket) => {
 //Middlewares
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
-app.use(cors({origin: 'http://localhost:3000', credentials:true}));
-// app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(cors({origin: ['http://localhost:3000','https://mern-chat-app-orpin-psi.vercel.app'], credentials:true}));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use("/api/auth", authRouter);
 app.use("/api/message", messageRouter);
 app.get("/", (req, res) => {
